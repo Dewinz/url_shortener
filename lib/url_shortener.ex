@@ -1,22 +1,12 @@
 defmodule UrlShortener do
-  @moduledoc """
-  Documentation for `UrlShortener`.
-  """
+  @moduledoc false
 
-  @doc """
-  Hello world.
+  def start(:normal, _start_options) do
+    children = [
+      {Data, []},
+      {Bandit, plug: Http, port: Application.fetch_env!(:url_shortener, :port)}
+    ]
 
-  ## Examples
-
-  iex> UrlShortener.hello()
-  :world
-
-  """
-  def hello do
-    :world
-  end
-
-  def something do
-    IO.puts("Hldjkfal")
+    Supervisor.start_link(children, strategy: :one_for_one, name: Server)
   end
 end

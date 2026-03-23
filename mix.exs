@@ -1,4 +1,5 @@
 defmodule UrlShortener.MixProject do
+  @moduledoc false
   use Mix.Project
 
   def project do
@@ -13,13 +14,16 @@ defmodule UrlShortener.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger],
+      mod: {UrlShortener, []}
     ]
   end
 
   defp deps do
     [
-      {:credo, ">= 0.0.0"}
+      {:credo, ">= 0.0.0"},
+      {:plug, ">= 0.0.0"},
+      {:bandit, ">= 0.0.0"}
     ]
   end
 end
