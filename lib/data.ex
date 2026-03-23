@@ -4,7 +4,7 @@ defmodule UrlShortener.Data do
 
   def start do
     File.mkdir_p!("data")
-    :dets.open_file(:data_storage, type: :set, file: ~c"data/data.dets")
+    :dets.open_file(:data_storage, type: :set, file: Application.fetch_env!(:url_shortener, :data_file))
   end
 
   def stop do
