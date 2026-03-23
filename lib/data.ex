@@ -17,7 +17,7 @@ defmodule Data do
   def add_redirect_endpoint(incoming_endpoint, outgoing_endpoint) do
     case :dets.insert_new(:data_storage, {incoming_endpoint, outgoing_endpoint}) do
       true -> :ok
-      false -> :error
+      false -> :conflict
     end
   end
 end

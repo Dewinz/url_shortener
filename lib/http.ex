@@ -34,16 +34,28 @@ defmodule Http do
   end
 
   defp handle_post(connection) do
-    # TODO: Do there need to be rules for this?
+    case read_body(connection) do
+      {:ok, request_body, connection} ->
+        parse_json_and_add_redirect_endpoint(connection, request_body)
+
+      _ ->
+        send_resp(connection, 400, "No request body given")
+    end
+  end
+
+  defp parse_json_and_add_redirect_endpoint(connection, request_body) do
     incoming_endpoint = connection.request_path
 
-    {:ok, request_body, connection} = read_body(connection)
-    {:ok, map} = JSON.decode(request_body)
+    case JSON.decode(request_body) do
+      {:ok, map} ->
+        case Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do
+          :ok -> send_resp(connection, 201, "")
+          :conflict -> send_resp(connection, 409, "Route #{incoming_endpoint} is already in use")
+          :error -> send_resp(connection, 400, "Expected body: { \"url\": \"^https?://...\" }")
+        end
 
-    :ok =
-      Domain.add_redirect_endpoint(incoming_endpoint, map["url"])
-
-    connection
-    |> send_resp(201, incoming_endpoint)
+      _ ->
+        send_resp(connection, 400, "Invalid JSON given.")
+    end
   end
 end
