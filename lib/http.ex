@@ -2,12 +2,13 @@ defmodule UrlShortener.Http do
   @moduledoc false
   use Plug.Router
 
-  plug :match
-  plug :dispatch
+  plug(:match)
+  plug(:dispatch)
 
   get "/:incoming_endpoint" do
     handle_get(conn, incoming_endpoint)
   end
+
   post "/:incoming_endpoint" do
     handle_post(conn, incoming_endpoint)
   end
@@ -43,16 +44,13 @@ defmodule UrlShortener.Http do
   end
 
   defp parse_json_and_add_redirect_endpoint(connection, request_body, incoming_endpoint) do
-    case JSON.decode(request_body) do
-      {:ok, map} ->
-        case UrlShortener.Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do
-          :ok -> send_resp(connection, 201, "")
-          :conflict -> send_resp(connection, 409, "Route #{incoming_endpoint} is already in use")
-          :error -> send_resp(connection, 400, "Expected body: { \"url\": \"^https?://...\" }")
-        end
-
-      _ ->
-        send_resp(connection, 400, "Invalid JSON given.")
+    with {:ok, map} <- JSON.decode(request_body),
+         :ok <- UrlShortener.Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do
+      send_resp(connection, 201, "")
+    else
+      {:error, _} -> send_resp(connection, 400, "Invalid JSON given.")
+      :conflict -> send_resp(connection, 409, "Route #{incoming_endpoint} is already in use")
+      :error -> send_resp(connection, 400, "Expected body: { \"url\": \"^https?://...\" }")
     end
   end
 end
