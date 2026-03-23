@@ -7,6 +7,10 @@ defmodule UrlShortener.Data do
     :dets.open_file(:data_storage, type: :set, file: ~c"data/data.dets")
   end
 
+  def stop do
+    :dets.close(:data_storage)
+  end
+
   def get_redirect_endpoint(incoming_endpoint) do
     case :dets.lookup(:data_storage, incoming_endpoint) do
       [{^incoming_endpoint, outgoing_endpoint}] -> {:ok, outgoing_endpoint}
