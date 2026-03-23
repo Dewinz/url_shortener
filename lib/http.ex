@@ -1,20 +1,19 @@
 defmodule UrlShortener.Http do
   @moduledoc false
-  import Plug.Conn
+  use Plug.Router
 
-  def init(options) do
-    options
+  plug :match
+  plug :dispatch
+
+  get "/:incoming_endpoint" do
+    handle_get(conn, incoming_endpoint)
+  end
+  post "/:incoming_endpoint" do
+    handle_post(conn, incoming_endpoint)
   end
 
-  def call(connection, _options) do
-    case connection.method do
-      "GET" -> handle_get(connection)
-      "POST" -> handle_post(connection)
-    end
-  end
-
-  defp handle_get(connection) do
-    {status, outgoing_endpoint} = UrlShortener.Data.get_redirect_endpoint(connection.request_path)
+  defp handle_get(connection, incoming_endpoint) do
+    {status, outgoing_endpoint} = UrlShortener.Data.get_redirect_endpoint(incoming_endpoint)
 
     case status do
       :ok -> handle_get_success(connection, outgoing_endpoint)
@@ -33,19 +32,17 @@ defmodule UrlShortener.Http do
     |> send_resp(404, "")
   end
 
-  defp handle_post(connection) do
+  defp handle_post(connection, incoming_endpoint) do
     case read_body(connection) do
       {:ok, request_body, connection} ->
-        parse_json_and_add_redirect_endpoint(connection, request_body)
+        parse_json_and_add_redirect_endpoint(connection, request_body, incoming_endpoint)
 
       _ ->
         send_resp(connection, 400, "No request body given")
     end
   end
 
-  defp parse_json_and_add_redirect_endpoint(connection, request_body) do
-    incoming_endpoint = connection.request_path
-
+  defp parse_json_and_add_redirect_endpoint(connection, request_body, incoming_endpoint) do
     case JSON.decode(request_body) do
       {:ok, map} ->
         case UrlShortener.Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do

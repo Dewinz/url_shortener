@@ -5,7 +5,7 @@ defmodule UrlShortener do
     UrlShortener.Data.start()
 
     children = [
-      {Bandit, plug: Http, port: Application.fetch_env!(:url_shortener, :port)}
+      {Bandit, plug: UrlShortener.Http, port: Application.fetch_env!(:url_shortener, :port)}
     ]
 
     Supervisor.start_link(children, strategy: :one_for_one, name: Server)
