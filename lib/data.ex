@@ -1,6 +1,5 @@
 defmodule UrlShortener.Data do
   @moduledoc false
-  use Agent
 
   def start do
     File.mkdir_p!("data")
