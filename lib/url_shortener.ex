@@ -2,8 +2,9 @@ defmodule UrlShortener do
   @moduledoc false
 
   def start(:normal, _start_options) do
+    Data.start()
+
     children = [
-      {Data, []},
       {Bandit, plug: Http, port: Application.fetch_env!(:url_shortener, :port)}
     ]
 
