@@ -20,7 +20,7 @@ defmodule UrlShortenerTest do
   end
 
   test "defined endpoint can be found" do
-    conn(:post, "/asdf", "{ \"url\": \"https://google.com\" }")
+    conn(:post, "/asdf", JSON.encode!(%{"url" => "https://google.com"}))
     |> UrlShortener.Http.call(@opts)
 
     connection =
@@ -32,18 +32,18 @@ defmodule UrlShortenerTest do
 
   test "endpoint can be defined" do
     connection =
-      conn(:post, "/asdf", "{ \"url\": \"https://google.com\" }")
+      conn(:post, "/asdf", JSON.encode!(%{"url" => "https://google.com"}))
       |> UrlShortener.Http.call(@opts)
 
     assert connection.status == 201
   end
 
   test "already defined endpoint cannot be redefined" do
-    conn(:post, "/asdf", "{ \"url\": \"https://google.com\" }")
+    conn(:post, "/asdf", JSON.encode!(%{"url" => "https://google.com"}))
     |> UrlShortener.Http.call(@opts)
 
     connection =
-      conn(:post, "/asdf", "{ \"url\": \"https://google.com\" }")
+      conn(:post, "/asdf", JSON.encode!(%{"url" => "https://google.com"}))
       |> UrlShortener.Http.call(@opts)
 
     assert connection.status == 409
