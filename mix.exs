@@ -21,7 +21,7 @@ defmodule UrlShortener.MixProject do
 
   defp deps do
     [
-      {:credo, ">= 0.0.0"},
+      {:credo, ">= 0.0.0", runtime: false},
       {:plug, ">= 0.0.0"},
       {:bandit, ">= 0.0.0"}
     ]
