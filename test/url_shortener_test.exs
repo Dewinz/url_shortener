@@ -6,7 +6,6 @@ defmodule UrlShortenerTest do
 
   @opts UrlShortener.Http.init([])
 
-  # TODO: Have some kind of test storage?
   setup do
     :dets.delete_all_objects(:data_storage)
     :ok
