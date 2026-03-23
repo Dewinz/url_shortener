@@ -1,4 +1,4 @@
-defmodule Http do
+defmodule UrlShortener.Http do
   @moduledoc false
   import Plug.Conn
 
@@ -14,7 +14,7 @@ defmodule Http do
   end
 
   defp handle_get(connection) do
-    {status, outgoing_endpoint} = Data.get_redirect_endpoint(connection.request_path)
+    {status, outgoing_endpoint} = UrlShortener.Data.get_redirect_endpoint(connection.request_path)
 
     case status do
       :ok -> handle_get_success(connection, outgoing_endpoint)
@@ -48,7 +48,7 @@ defmodule Http do
 
     case JSON.decode(request_body) do
       {:ok, map} ->
-        case Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do
+        case UrlShortener.Domain.add_redirect_endpoint(incoming_endpoint, map["url"]) do
           :ok -> send_resp(connection, 201, "")
           :conflict -> send_resp(connection, 409, "Route #{incoming_endpoint} is already in use")
           :error -> send_resp(connection, 400, "Expected body: { \"url\": \"^https?://...\" }")

@@ -1,14 +1,9 @@
-defmodule Domain do
+defmodule UrlShortener.Domain do
   @moduledoc false
-
-  defmodule Url do
-    @moduledoc false
-    defstruct url: ""
-  end
 
   def add_redirect_endpoint(incoming_endpoint, outgoing_endpoint) do
     if String.match?(outgoing_endpoint, ~r/^https?:\/\/.+$/) do
-      Data.add_redirect_endpoint(incoming_endpoint, outgoing_endpoint)
+      UrlShortener.Data.add_redirect_endpoint(incoming_endpoint, outgoing_endpoint)
     else
       :error
     end

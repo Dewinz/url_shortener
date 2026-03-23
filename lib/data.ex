@@ -1,4 +1,4 @@
-defmodule Data do
+defmodule UrlShortener.Data do
   @moduledoc false
   use Agent
 
